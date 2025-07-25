@@ -150,8 +150,28 @@ export default function MarketplacePage() {
   }
 
   const handlePurchase = async (listingId: string) => {
-    // Handle Stripe checkout
-    console.log('Purchase listing:', listingId)
+    try {
+      const listing = listings.find(l => l.id === listingId)
+      if (!listing) return
+
+      const { createPaymentCheckout, redirectToCheckout } = await import('@/lib/stripe-client')
+      
+      const sessionId = await createPaymentCheckout(
+        listing.price,
+        listing.title,
+        {
+          listingId: listing.id,
+          sellerId: listing.seller.id,
+          type: listing.type,
+          category: listing.category
+        }
+      )
+      
+      await redirectToCheckout(sessionId)
+    } catch (error) {
+      console.error('Purchase error:', error)
+      // Handle error (show toast, etc.)
+    }
   }
 
   return (

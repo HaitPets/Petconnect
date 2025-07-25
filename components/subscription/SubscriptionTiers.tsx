@@ -80,14 +80,24 @@ export function SubscriptionTiers() {
   const [selectedTier, setSelectedTier] = useState('premium')
   const [isAnnual, setIsAnnual] = useState(false)
 
-  const handleSubscribe = (tierId: string) => {
+  const handleSubscribe = async (tierId: string) => {
     if (tierId === 'free') {
       // Handle free signup
       window.location.href = '/auth/register'
-    } else {
-      // Handle Stripe checkout
-      console.log(`Subscribe to ${tierId}`)
-      // TODO: Implement Stripe checkout
+      return
+    }
+
+    try {
+      const { createSubscriptionCheckout, redirectToCheckout } = await import('@/lib/stripe-client')
+      const { getStripePrice } = await import('@/lib/stripe')
+      
+      const priceId = getStripePrice(tierId.toUpperCase() as 'PREMIUM' | 'BREEDER', isAnnual)
+      const sessionId = await createSubscriptionCheckout(priceId, 'current-user-id')
+      
+      await redirectToCheckout(sessionId)
+    } catch (error) {
+      console.error('Subscription error:', error)
+      // Handle error (show toast, etc.)
     }
   }
 

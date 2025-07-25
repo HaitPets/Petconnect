@@ -38,9 +38,33 @@ MoPets is a mobile-first community platform built with Adalo that brings togethe
 
 ## 🚀 Getting Started
 
-1. **Platform Setup**: Create Adalo account at adalo.com
-2. **Project Creation**: Start new "MoPets" project with Social Network template
-3. **Follow Implementation Guide**: See `/docs/implementation-guide.md`
+### Quick Setup
+```bash
+# Clone the repository
+git clone <repository-url>
+cd mopets-app
+
+# Run automated setup
+./scripts/setup.sh
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your credentials
+
+# Set up database
+npx prisma migrate dev
+
+# Start development server
+npm run dev
+```
+
+### Manual Setup
+1. **Install Dependencies**: `npm install`
+2. **Environment Setup**: Copy `.env.example` to `.env` and configure
+3. **Database Setup**: Run `npx prisma migrate dev`
+4. **Start Development**: Run `npm run dev`
+
+See `/docs/setup-guide.md` for detailed instructions.
 
 ## 📱 Key Features
 

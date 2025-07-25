@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-montserrat);
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Mobile-first responsive design */
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #8b4513;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #654321;
+  }
+
+  /* Remove tap highlights on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Input autofill styles */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-text-fill-color: #8b4513 !important;
+  }
+}
+
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply bg-primary-800 hover:bg-primary-900 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-soft hover:shadow-luxury active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-gold-500 hover:bg-gold-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-soft hover:shadow-luxury active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-800 text-primary-800 hover:bg-primary-800 hover:text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-primary-800 hover:bg-primary-100 font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft border border-primary-100 overflow-hidden;
+  }
+
+  .card-luxury {
+    @apply bg-gradient-to-br from-accent-luxury to-white rounded-2xl shadow-luxury border border-gold-200 overflow-hidden;
+  }
+
+  /* Input styles */
+  .input-primary {
+    @apply w-full px-4 py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-primary-900 placeholder-primary-400 transition-all duration-200;
+  }
+
+  /* Navigation styles */
+  .nav-item {
+    @apply flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .nav-item-active {
+    @apply bg-primary-800 text-white;
+  }
+
+  .nav-item-inactive {
+    @apply text-primary-600 hover:bg-primary-100;
+  }
+
+  /* Breed-specific accent colors */
+  .accent-frenchie {
+    @apply bg-accent-frenchie text-primary-900;
+  }
+
+  .accent-corso {
+    @apply bg-accent-corso text-white;
+  }
+
+  .accent-luxury {
+    @apply bg-gradient-to-r from-gold-400 to-gold-600 text-white;
+  }
+
+  /* Loading animations */
+  .loading-pulse {
+    @apply animate-pulse bg-primary-200 rounded;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-primary-200 border-t-primary-800;
+  }
+
+  /* Custom animations */
+  .slide-up-enter {
+    @apply transform translate-y-full opacity-0;
+  }
+
+  .slide-up-enter-active {
+    @apply transform translate-y-0 opacity-100 transition-all duration-300 ease-out;
+  }
+
+  .fade-in-enter {
+    @apply opacity-0;
+  }
+
+  .fade-in-enter-active {
+    @apply opacity-100 transition-opacity duration-200 ease-in;
+  }
+}
+
+@layer utilities {
+  /* Safe area utilities for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Backdrop blur utilities */
+  .backdrop-blur-glass {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Text gradient utilities */
+  .text-gradient-luxury {
+    @apply bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+  }
+
+  /* Custom shadows */
+  .shadow-luxury-lg {
+    box-shadow: 0 20px 40px rgba(218, 165, 32, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile-specific styles */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .mobile-tap {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* PWA-specific styles */
+@media (display-mode: standalone) {
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode variables can be added here */
+  }
+}

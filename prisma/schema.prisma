@@ -1,0 +1,241 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PET_OWNER
+  PET_LOVER
+  BREEDER
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  BREEDER
+}
+
+enum BreedType {
+  FRENCH_BULLDOG
+  CANE_CORSO
+  ENGLISH_BULLDOG
+  OTHER
+}
+
+enum MarketplaceCategory {
+  SUPPLIES
+  PUPPIES
+  ACCESSORIES
+  FOOD
+  TOYS
+}
+
+model User {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  password          String
+  username          String            @unique
+  role              UserRole
+  subscriptionTier  SubscriptionTier  @default(FREE)
+  stripeCustomerId  String?
+  bio               String?
+  profilePicture    String?
+  location          String?
+  phone             String?
+  isVerified        Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  posts             Post[]
+  litters           Litter[]
+  puppyListings     PuppyListing[]
+  marketplaceItems  MarketplaceItem[]
+  sentMessages      Message[]         @relation("MessageSender")
+  receivedMessages  Message[]         @relation("MessageReceiver")
+  subscriptions     Subscription[]
+  likes             Like[]
+  comments          Comment[]
+  followers         Follow[]          @relation("UserFollowers")
+  following         Follow[]          @relation("UserFollowing")
+
+  @@map("users")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  userId      String
+  content     String
+  images      String[]
+  breed       BreedType?
+  isPromoted  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+
+  @@map("posts")
+}
+
+model Like {
+  id     String @id @default(cuid())
+  userId String
+  postId String
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String
+  followingId String
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Litter {
+  id             String    @id @default(cuid())
+  breederId      String
+  breed          BreedType
+  puppyCount     Int
+  birthDate      DateTime
+  expectedReady  DateTime?
+  description    String?
+  images         String[]
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relationships
+  breeder        User      @relation(fields: [breederId], references: [id], onDelete: Cascade)
+  puppies        Puppy[]
+
+  @@map("litters")
+}
+
+model Puppy {
+  id              String   @id @default(cuid())
+  litterId        String
+  name            String?
+  gender          String
+  color           String
+  weight          Float?
+  vaccinations    String[]
+  healthRecords   String[]
+  images          String[]
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  litter          Litter   @relation(fields: [litterId], references: [id], onDelete: Cascade)
+
+  @@map("puppies")
+}
+
+model PuppyListing {
+  id          String    @id @default(cuid())
+  breederId   String
+  breed       BreedType
+  title       String
+  description String
+  price       Float
+  images      String[]
+  age         Int       // in weeks
+  gender      String
+  color       String
+  isAvailable Boolean   @default(true)
+  isFeatured  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  breeder     User      @relation(fields: [breederId], references: [id], onDelete: Cascade)
+
+  @@map("puppy_listings")
+}
+
+model MarketplaceItem {
+  id          String              @id @default(cuid())
+  sellerId    String
+  title       String
+  description String
+  price       Float
+  category    MarketplaceCategory
+  images      String[]
+  condition   String              // New, Used, Like New
+  isAvailable Boolean             @default(true)
+  isFeatured  Boolean             @default(false)
+  location    String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  // Relationships
+  seller      User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@map("marketplace_items")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  // Relationships
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Subscription {
+  id                String            @id @default(cuid())
+  userId            String
+  tier              SubscriptionTier
+  stripeSubscriptionId String?        @unique
+  status            String            // active, canceled, past_due, etc.
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
